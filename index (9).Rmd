@@ -1,0 +1,184 @@
+---
+title: "AFDMD-111 - Estadística"
+subtitle: "Distribuciones muestrales"
+author: "Pablo Antonio Galvan Ortiz"
+date: "27/11/2023"
+output:
+  rmdformats::material:
+    highlight: kate
+    cards: false
+---
+
+
+```{r knitr_init, echo=FALSE, message=FALSE, warning=FALSE}
+
+```
+
+
+
+# Distribuciones muestrales de la media
+
+En esta práctica  abordaremos el tema de la distribución muestral de la media para diversas distribuciones de probabilidad y veremos como éstas se ajustan a una distribución de probabilidad normal o Gaussiana como la que se muestra en la ecuación,
+
+$$
+f_X(x) = \frac{1}{\sqrt{2\pi \sigma^2}} \mbox{e}^{-\frac{-(x-\mu)^2}{2\sigma^2}}
+$$
+
+Antes de iniciar, es necesario que nos familiaricemos con los siguientes comandos:
+
+```{r}
+#hist()
+#qqnorm()
+#qqline()
+```
+
+para ello podemos hacer `help(comando)` y obtener ayuda sobre cada uno de ellos. Ahora responda lo siguiente.
+
+1. ¿Cuál es la función del comando `qqnorm`?.
+
+R:La función del comando qqnorm en R es graficar un cuantil-cuantil (QQ) plot para evaluar si una muestra de datos se ajusta a una distribución teórica normal.
+
+
+2. ¿Cuál es la función del comando `qqline`? ¿y de `hist`?.
+
+R:  qqline: La función qqline en R se utiliza para agregar una línea de referencia al gráfico cuantil-cuantil (QQ plot) creado con qqnorm. Esta línea ayuda a visualizar la desviación de la distribución de los datos con respecto a la distribución normal teórica.
+
+hist: La función hist se utiliza para crear un histograma en R. Un histograma es una representación gráfica de la distribución de un conjunto de datos, dividiendo los datos en intervalos y mostrando la frecuencia de observaciones en cada intervalo.
+
+## Aplicación de `qqnorm` y `qqline`
+
+Veamos ahora la aplicación de `qqnorm` y `qqline` en un ejemplo práctico. Supóngamos que queremos verificar si los datos se ajustan a una distribución normal, entonces para hacerlo, aplicamos,
+
+```{r}
+datos <- rnorm(100, mean = 10)
+qqnorm(datos)
+qqline(datos)
+```
+
+Actividad.
+
+1. Ahora cambie los nombres de los ejes $x$, $y$ y del título del gráfico anterior.
+```{r}
+datos <- rnorm(100, mean = 10)
+qqnorm(datos, xlab = "Cuantiles teóricos", ylab = "Cuantiles observados")
+qqline(datos)
+title(main = "QQ Plot para datos generados aleatoriamente")
+
+```
+2. ¿Qué sucede si la longitud de los datos es pequeña, digamos 10, 20 (modifique `rnorm`)? 
+
+R: Si decides cambiar la longitud de los datos generados por rnorm a un valor más pequeño, como 10 o 20, notarás que el QQ plot puede no ser tan informativo o representativo como cuando se tiene una muestra más grande. Con tamaños de muestra pequeños, la variabilidad inherente puede llevar a que el QQ plot no refleje con precisión la distribución teórica.
+```{r}
+datos <- rnorm(20, mean = 10)
+qqnorm(datos, xlab = "Cuantiles teóricos", ylab = "Cuantiles observados")
+qqline(datos)
+title(main = "QQ Plot para datos generados aleatoriamente (n = 20)")
+
+```
+
+3. ¿Qué sucede si los datos tienen varianza grande? ¿En qué parte del gráfico Q-Q se puede ver la varianza grande?
+
+R:Cuando los datos tienen una varianza grande, esto puede afectar la interpretación del QQ plot. El QQ plot compara los cuantiles observados de los datos con los cuantiles esperados de una distribución teórica (normal en este caso). Si los datos tienen una varianza grande, podrías observar ciertos patrones en el QQ plot que indican esa variabilidad.
+
+```{r}
+# Generar datos con varianza grande
+datos_varianza_grande <- rnorm(100, mean = 10, sd = 5)
+
+# Crear QQ plot
+qqnorm(datos_varianza_grande, xlab = "Cuantiles teóricos", ylab = "Cuantiles observados")
+qqline(datos_varianza_grande)
+title(main = "QQ Plot para datos con varianza grande")
+
+```
+
+
+4. ¿Y si cambiamos la media?
+
+R:Si cambias la media, los puntos en el QQ plot se desplazarán hacia arriba o hacia abajo en relación con la línea diagonal de referencia, lo que indica diferencias en la ubicación de los cuantiles observados en comparación con la distribución teórica.
+```{r}
+# Generar datos con media diferente
+datos_media_diferente <- rnorm(100, mean = 15, sd = 2)
+
+# Crear QQ plot
+qqnorm(datos_media_diferente, xlab = "Cuantiles teóricos", ylab = "Cuantiles observados")
+qqline(datos_media_diferente)
+title(main = "QQ Plot para datos con media diferente")
+
+```
+
+
+5. ¿Qué sucede si los datos son exponenciales?
+
+R:Si generas datos de una distribución exponencial en lugar de una distribución normal, el QQ plot mostrará patrones específicos asociados con la diferencia en la forma de las dos distribuciones. La distribución exponencial tiene una cola más pesada y no es simétrica como la distribución normal.
+
+```{r}
+# Generar datos exponenciales
+datos_exponenciales <- rexp(100, rate = 0.1)
+
+# Crear QQ plot
+qqnorm(datos_exponenciales, xlab = "Cuantiles teóricos", ylab = "Cuantiles observados")
+qqline(datos_exponenciales)
+title(main = "QQ Plot para datos exponenciales")
+
+```
+
+
+## Aplicación de `hist`
+
+El comando `hist` permite obtener el histograma de una serie de datos. El histograma, de igual forma que el gráfico Q-Q permite ajustar una serie de datos a una distribución para saber qué tanto se parece a la densidad teórica. Veamos cómo se aplica.
+
+
+
+```{r}
+datos <- rnorm(1000) #1000 muestras de una densidad normal
+hist(datos)
+
+```
+
+Podemos ver en el gráfico del histograma que éste es similar al gráfico de la densidad. El siguiente código lo muestra:
+
+
+```{r}
+datos <- rnorm(1000) # muestras normales con media 0 y var 1.
+teorica <- dnorm(seq(-4,4, length=100),mean = 0, sd = 1)
+hist(datos,freq = FALSE)
+lines(seq(-4,4, length=100),teorica, col="red")
+```
+
+Actividades.
+
+1. ¿Qué sucede si el número de muestras es pequeño (muestrelo mediante código y gráficas)?
+2. ¿Y si cambio la varianza? ¿Tiene algún efecto la varianza grande? Mostrar con código.
+3. ¿Cuáles crees que son las ventajas y desventajas del histograma y el gráfico Q-Q?
+
+
+# Aplicación de la distribución muestral de la media.
+
+El término distribución muestral de la media se refiera a la distribución (ajustada mediante el gráfico Q-Q o el histograma) de la media muestral de un  conjunto de datos. Por ejemplo,
+
+```{r}
+N <- 10 # número de medias (es decir número de muestras)
+M <- 100 # número de la longitud de cada serie de datos
+medias <- numeric(N) # Vector que guardará las medias
+
+for(i in 1:N)
+{
+  datos <- rnorm(M)
+  medias[i] <- mean(datos)
+  
+}
+hist(medias)
+qqnorm(medias)
+qqline(medias)
+```
+
+
+Actividad
+
+1. ¿Qué sucede si hago N grande, por ejemplo 100, 1000, 10000?
+2. ¿Qué sucede si en lugar de tomar una muestra Gaussiana, tomo una muestra exponencial con N muy grande?
+
+
+
+## Fecha de entrega: Miércoles 29 de Noviembre de 2023 ha las 16:00HRS 
+
